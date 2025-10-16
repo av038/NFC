@@ -110,8 +110,8 @@ def scan_and_read(uid):
             else:
                 print(f"  Block {block_addr:02d}: {hexd}")
         # limpiar estado crypto entre sectores
-        try:
-            reader.MFRC522_StopCrypto1()
-        except Exception:
-            pass
+#        try:
+#            reader.MFRC522_StopCrypto1()
+#        except Exception:
+#            pass
     return found_any
