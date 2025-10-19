@@ -83,10 +83,15 @@ def scan_and_read(uid):
         sector_base = sector * 4
         authenticated = False
         used_key = None
+        COMMON_KEYS = next(gen) # Agregado por mí. Uso el generador. Lo hago así con COMMON_KEYS para no modificar tanto el código
         for key in COMMON_KEYS:
             if auth_with_key(sector_base, key, uid):
                 authenticated = True
                 used_key = key
+                # Agregado por mí desde acá
+                print(f'/nClave encontrada {COMMON_KEYS} para el sector {sector}./n')
+                input('Presionar enter para continuar')
+                # hasta acá
                 break
         if not authenticated:
             print(f"Sector {sector:02d}: Auth FAIL (claves comunes)")
@@ -115,3 +120,22 @@ def scan_and_read(uid):
 #        except Exception:
 #            pass
     return found_any
+
+# Agregado por mí desde acá
+
+# Generador de keys con una base 0xD1 0x44 que es lo que saqué de https://elcuervo.net/omnibus/
+def key_generator():
+    for b1 in range(0xFF):
+        for b2 in range(0xFF):
+            for b3 in range(0xFF):
+                for b4 in range(0xFF):
+                    yield [0xD1, 0x44, b1, b2, b3, b4]
+
+# Crear el generador (solo una vez)
+gen = key_generator()
+
+# Cada vez que necesites la siguiente clave:
+#next_key = next(gen)
+#print(next_key)
+
+# hasta acá
