@@ -79,12 +79,16 @@ def scan_and_read(uid):
     print("UID:", ["%02X" % b for b in uid], "len:", len(uid))
     select_tag(uid)
     found_any = False
-    for sector in range(16):
+    for sector in range(2): #(16):
         sector_base = sector * 4
         authenticated = False
         used_key = None
         COMMON_KEYS = next(gen) # Agregado por mí. Uso el generador. Lo hago así con COMMON_KEYS para no modificar tanto el código
-        for key in COMMON_KEYS:
+        key = COMMON_KEYS
+
+        while COMMON_KEYS != [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]:
+            print(COMMON_KEYS)
+
             if auth_with_key(sector_base, key, uid):
                 authenticated = True
                 used_key = key
@@ -93,6 +97,8 @@ def scan_and_read(uid):
                 input('Presionar enter para continuar')
                 # hasta acá
                 break
+            COMMON_KEYS = next(gen) # Agregado por mí. Uso el generador. Lo hago así con COMMON_KEYS para no modificar tanto el código
+            key = COMMON_KEYS
         if not authenticated:
             print(f"Sector {sector:02d}: Auth FAIL (claves comunes)")
             continue
@@ -126,7 +132,7 @@ def scan_and_read(uid):
 # Generador de keys con una base 0xD1 0x44 que es lo que saqué de https://elcuervo.net/omnibus/
 def key_generator():
     for b1 in range(0xFF):
-        for b2 in range(0xFF):
+        for b2 in range(0x1E, 0xFF):
             for b3 in range(0xFF):
                 for b4 in range(0xFF):
                     yield [0xD1, 0x44, b1, b2, b3, b4]
